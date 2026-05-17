@@ -1,0 +1,315 @@
+/* ─── Design Tokens ----- */
+:root {
+  --bg:          #07090f;
+  --surface:     #0f1322;
+  --surface2:    #161b2e;
+  --border:      rgba(255, 255, 255, 0.08);
+  --border-focus:rgba(0, 212, 180, 0.5);
+  --teal:        #00d4b4;
+  --teal-dim:    rgba(0, 212, 180, 0.08);
+  --coral:       #ff6b47;
+  --text:        #eef0f7;
+  --muted:       #636b8a;
+  --radius-sm:   10px;
+  --radius-md:   16px;
+  --radius-lg:   24px;
+  --font-display:'Syne', sans-serif;
+  --font-body:   'DM Sans', sans-serif;
+  --transition:  0.25s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ─── Reset & Base ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Teal glow — top left */
+body::before {
+  content: '';
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 180, 0.13) 0%, transparent 70%);
+  top: -180px;
+  left: -180px;
+  pointer-events: none;
+  filter: blur(10px);
+  z-index: 0;
+}
+
+/* Coral glow — bottom right */
+body::after {
+  content: '';
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 107, 71, 0.09) 0%, transparent 70%);
+  bottom: -120px;
+  right: -120px;
+  pointer-events: none;
+  filter: blur(10px);
+  z-index: 0;
+}
+
+/* ─── Layout =---- */
+.standalone-form-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  animation: fadeUp 0.5s var(--transition) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Card ------ */
+.form-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top shimmer line */
+.form-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 180, 0.45), transparent);
+}
+
+/* ─── Heading ----- */
+h3 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(120deg, var(--teal) 0%, #6ee7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h3::before {
+  content: '';
+   display: inline-block;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #39ff14;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  -webkit-background-clip: initial;
+  box-shadow:
+    0 0 6px  2px rgba(57, 255, 20, 0.9),
+    0 0 14px 4px rgba(57, 255, 20, 0.55),
+    0 0 28px 6px rgba(57, 255, 20, 0.25);
+  animation: neon-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow:
+      0 0 6px  2px rgba(57, 255, 20, 0.9),
+      0 0 14px 4px rgba(57, 255, 20, 0.55),
+      0 0 28px 6px rgba(57, 255, 20, 0.25);
+  }
+  50% {
+    opacity: 0.35;
+    box-shadow:
+      0 0 2px 1px rgba(57, 255, 20, 0.3),
+      0 0 4px 2px rgba(57, 255, 20, 0.1);
+  }
+}
+/* ─── Form Layout ────────────────────────────────────────────── */
+#registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ─── Form Group — floating label pattern ────────────────────── */
+.form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+  pointer-events: none;
+  transition: top var(--transition), font-size var(--transition),
+              color var(--transition), letter-spacing var(--transition);
+  background: transparent;
+  padding: 0 4px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 22px 16px 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition),
+  background var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Select arrow */
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23636b8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: #1a2035;
+  color: var(--text);
+}
+
+/* Hover state */
+.form-group input:hover,
+.form-group select:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: #1a2035;
+}
+
+/* Focus state */
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(0, 212, 180, 0.09);
+  background: #1a2035;
+}
+
+/* Float label on focus OR when input has content */
+.form-group input:focus ~ label,
+.form-group input:not(:placeholder-shown) ~ label,
+.form-group select:focus ~ label,
+.form-group select.has-value ~ label {
+  top: 13px;
+  transform: translateY(0);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+/* Hide placeholder visually (label replaces it) */
+.form-group input::placeholder {
+  color: transparent;
+}
+
+/* ─── Submit Button ───────────────────────────────────────────── */
+#form-submit-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 17px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--teal) 0%, #00b896 100%);
+  color: #07090f;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+/* Shine sweep on hover */
+#form-submit-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.22), transparent);
+  transition: left 0.55s ease;
+}
+
+#form-submit-btn:hover::after {
+  left: 160%;
+}
+
+#form-submit-btn:hover {
+  box-shadow: 0 8px 28px rgba(0, 212, 180, 0.28);
+  transform: translateY(-1px);
+}
+
+#form-submit-btn:active {
+  transform: scale(0.98) translateY(0);
+  box-shadow: none;
+}
+
+/* ─── Staggered field entrance animations ────────────────────── */
+.form-group:nth-child(1) { animation: slideIn 0.4s 0.1s both; }
+.form-group:nth-child(2) { animation: slideIn 0.4s 0.18s both; }
+.form-group:nth-child(3) { animation: slideIn 0.4s 0.26s both; }
+.form-group:nth-child(4) { animation: slideIn 0.4s 0.34s both; }
+.form-group:nth-child(5) { animation: slideIn 0.4s 0.42s both; }
+#form-submit-btn          { animation: slideIn 0.4s 0.50s both; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .form-container {
+    padding: 28px 20px;
+  }
+
+  h3 {
+    font-size: 22px;
+  }
+}
