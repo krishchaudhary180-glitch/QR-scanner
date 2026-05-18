@@ -1,229 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Outfit:wght@700;800&display=swap');
+
+:root {
+  --bg:          #0a0b10;
+  --surface:     #12141c;
+  --text:        #ffffff;
+  --primary:     #00fff2b1; /* Neon Cyan */
+  --accent-green:#00ff66d7; /* Neon Green */
+  --accent-red:  #ff3366; /* Neon Red/Pink */
+  --border:      rgba(255, 255, 255, 0.08);
+  --font-display:'Outfit', sans-serif;
+  --font-body:   'Plus Jakarta Sans', sans-serif;
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #303030;
-    color: #000000;
-    margin: 0;
-    padding: 40px 20px;
-    display: flex;
-    justify-content: center;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
+/* --- Dashboard Main Glass Container --- */
 .dashboard-container {
-    width: 100%;
-    max-width: 900px;
-    background: #8a8a8a;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 1000px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
 }
 
+/* --- Heading Styling with Pulsing Dot --- */
 h1 {
-    margin-bottom: 5px;
-    color: #1a202c;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+h1::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-color: var(--accent-green);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-green), 0 0 20px var(--accent-green);
+  animation: pulse-dot 2s infinite alternate;
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+  }
+  100% {
+    transform: scale(1.1);
+    box-shadow: 0 0 18px var(--accent-green), 0 0 30px rgba(0, 255, 102, 0.4);
+  }
 }
 
 p {
-    color: #343538;
-    margin-top: 10px;;
-    margin-bottom: 25px;
+  color: #a0aec0;
+  font-size: 0.95rem;
+  margin-bottom: 30px;
 }
 
+/* --- Filter & Action Utility Ribbon --- */
+.action-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
 
 .filter-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    background: #c8e4f6;
-    padding: 15px;
-    border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 16px;
 }
 
 .filter-label {
-    font-weight: 600;
-    color: #4a5568;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--primary);
 }
 
 .day-selector {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 8px;
 }
 
 .day-btn {
-    background: #efefef;
-    border: 1px solid #cbd5e0;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: #a0aec0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
 }
 
 .day-btn:hover {
-    background: #b9c2cc;
-    border-color: #a0aec0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: #718096;
 }
 
 .day-btn.active {
-    background: #4b83b7;
-    color: #ffffff;
-    border-color: #235b91;
+  background: rgba(0, 255, 242, 0.1);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(0, 255, 242, 0.15);
 }
 
-.testing-actions {
-    margin-bottom: 20px;
-}
-
+/* --- Custom Glowing Demo Button --- */
 #simulate-scan-btn {
-    background: #38a169;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s ease;
+  background: var(--accent-green);
+  color: #000;
+  border: none;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 102, 0.2);
 }
 
 #simulate-scan-btn:hover {
-    background: #2f855a;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px var(--accent-green);
 }
 
-.table-container {
-    overflow-x: auto;
-    border: 1px solid #000000;
-    border-radius: 8px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-th, td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #000f25;
-}
-
-th {
-    background-color: #ebf8ff;
-    color: #2b6cb0;
-    font-weight: 600;
-}
-
-tr:hover {
-    background-color: #f7fafc;
-}
-
-
-
-#log-table-body tr {
-    background-color: #f6e7d2;
-}
-
-#log-table-body tr:hover {
-    background-color: #ffe6aff2;
-}
-
-#log-table-body td {
-    color: #242c3a;
-    border-bottom: 1px solid #414141; 
-}
-
-
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.status-badge.verified {
-    background-color: #c6f6d5;
-    color: #22543d;
-}
-
-.status-badge.pending {
-    background-color: #feebc8;
-    color: #744210;
-}
-
-/* Campus Attendance Interactive Toggle Button */
-.campus-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.marker-icon {
-    font-size: 1rem;
-    font-weight: bold;
-}
-
-/* Green Styling for "In Campus" (✓) */
-.marker-in {
-    background-color: #e6fffa;
-    color: #047481;
-    border: 1px solid #b2f5ea;
-}
-.marker-in:hover {
-    background-color: #b2f5ea;
-}
-
-/* Styling in - out button */
-.marker-out {
-    background-color: #fff5f5;
-    color: #e53e3e;
-    border: 1px solid #fed7d7;
-}
-.marker-out:hover {
-    background-color: #fed7d7;
-}
-
-td {
-    white-space: nowrap;
-}
-
-/* === Search Section Styling ==== */
+/* --- Glowing Interactive Search Section --- */
 .search-section {
-    margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 #search-input {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 1rem;
-    border: 1px solid #cbd5e0;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-    background-color: #ecfdff;
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#search-input:focus {
-    outline: none;
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+#search-input::placeholder {
+  color: #4a5568;
 }
 
-/*Hover Effect*/
 #search-input:hover {
-    border-color: #727c89; 
-    background-color: #e0fbff;
+  border-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 #search-input:focus {
-    outline: none;
-    border-color: #313233; 
-    background-color: #dadada;
-    box-shadow: 0 0 0 3px rgba(25, 25, 25, 0.11);
+  outline: none;
+  border-color: var(--primary);
+  background-color: rgba(0, 255, 242, 0.02);
+  box-shadow: 0 0 15px rgba(0, 255, 242, 0.15);
+}
+
+/* --- High Tech Data Table --- */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 16px 20px;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+th {
+  background-color: rgba(255, 255, 255, 0.02);
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+
+td {
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr {
+  transition: background-color 0.2s ease;
+}
+
+tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* --- Verification Component Badges --- */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status-badge.verified {
+  background-color: rgba(0, 255, 102, 0.1);
+  color: var(--accent-green);
+  border: 1px solid rgba(0, 255, 102, 0.2);
+}
+
+.status-badge.pending {
+  background-color: rgba(255, 165, 0, 0.1);
+  color: #ffa500;
+  border: 1px solid rgba(255, 165, 0, 0.2);
+}
+
+/* --- Interactive Status Toggle Buttons --- */
+.campus-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.marker-icon {
+  font-size: 0.9rem;
+}
+
+/* Active State: In (Glows Green) */
+.marker-in {
+  background-color: rgba(0, 255, 102, 0.08);
+  color: var(--accent-green);
+  border: 1px solid rgba(0, 255, 102, 0.2);
+  box-shadow: 0 0 8px rgba(0, 255, 102, 0.05);
+}
+
+.marker-in:hover {
+  background-color: rgba(0, 255, 102, 0.15);
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.2);
+}
+
+/* Active State: Out (Glows Red) */
+.marker-out {
+  background-color: rgba(255, 51, 102, 0.08);
+  color: var(--accent-red);
+  border: 1px solid rgba(255, 51, 102, 0.2);
+}
+
+.marker-out:hover {
+  background-color: rgba(255, 51, 102, 0.15);
+  box-shadow: 0 0 12px rgba(255, 51, 102, 0.2);
 }

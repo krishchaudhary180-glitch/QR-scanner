@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="style.css">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Attendance Dashboard</title>
-    </head>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
     <div class="dashboard-container">
         <h1>QR Code Scanner Dashboard</h1>
         <p>Track real-time participant check-ins and scans.</p>
 
-        <div class="filter-section">
-            <span class="filter-label">Filter by Event Day:</span>
-            <div class="day-selector">
-                <button class="day-btn active" data-day="all">All Days</button>
-                <button class="day-btn" data-day="Day 1">Day 1</button>
-                <button class="day-btn" data-day="Day 2">Day 2</button>
-                <button class="day-btn" data-day="Day 3">Day 3</button>
+<button id="reset-time-btn" style="background: var(--accent-red); color: #000; border: none; padding: 10px 20px; font-weight: 700; font-family: var(--font-display); letter-spacing: 1px; border-radius: 10px; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.2); margin-left: 10px;">RESET TIMES</button>
+
+<br><br>
+
+        <div class="action-ribbon">
+            <div class="filter-section">
+                <span class="filter-label">Filter by Event Day:</span>
+                <div class="day-selector">
+                    <button class="day-btn active" data-day="all">All Days</button>
+                    <button class="day-btn" data-day="Day 1">Day 1</button>
+                    <button class="day-btn" data-day="Day 2">Day 2</button>
+                    <button class="day-btn" data-day="Day 3">Day 3</button>
+                </div>
+            </div>
+
+            <div class="testing-actions">
+                <button id="simulate-scan-btn">DEMO</button>
             </div>
         </div>
 
-        <div class="testing-actions">
-            <button id="simulate-scan-btn">DEMO</button>
-        </div>
-
-
-
-        
-                <div class="search-section">
+        <div class="search-section">
             <input type="text" id="search-input" placeholder="🔍 Search by Scan ID or Participant Name...">
         </div>
 
@@ -38,22 +40,20 @@
             <table>
                 <thead>
                     <tr>
-    <th>Scan ID</th>
-    <th>Participant Name</th>
-    <th>Scan Time</th>
-    <th>Event Day</th>
-    <th>Status</th>
-    <th>Campus Status</th> </tr>
+                        <th>Scan ID</th>
+                        <th>Participant Name</th>
+                        <th>In Time</th>
+                        <th>Out Time</th>
+                        <th>Event Day</th>
+                        <th>Status</th>
+                    </tr>
                 </thead>
-                  <tbody 
-                    id="log-table-body">
-                  </tbody>
+                <tbody id="log-table-body">
+                    </tbody>
             </table>
         </div>
     </div>
 
-    
-</body>
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
