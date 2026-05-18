@@ -1,0 +1,229 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #303030;
+    color: #000000;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.dashboard-container {
+    width: 100%;
+    max-width: 900px;
+    background: #8a8a8a;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    margin-bottom: 5px;
+    color: #1a202c;
+}
+
+p {
+    color: #343538;
+    margin-top: 10px;;
+    margin-bottom: 25px;
+}
+
+
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: #c8e4f6;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.day-selector {
+    display: flex;
+    gap: 10px;
+}
+
+.day-btn {
+    background: #efefef;
+    border: 1px solid #cbd5e0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.day-btn:hover {
+    background: #b9c2cc;
+    border-color: #a0aec0;
+}
+
+.day-btn.active {
+    background: #4b83b7;
+    color: #ffffff;
+    border-color: #235b91;
+}
+
+.testing-actions {
+    margin-bottom: 20px;
+}
+
+#simulate-scan-btn {
+    background: #38a169;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#simulate-scan-btn:hover {
+    background: #2f855a;
+}
+
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #000000;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #000f25;
+}
+
+th {
+    background-color: #ebf8ff;
+    color: #2b6cb0;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f7fafc;
+}
+
+
+
+#log-table-body tr {
+    background-color: #f6e7d2;
+}
+
+#log-table-body tr:hover {
+    background-color: #ffe6aff2;
+}
+
+#log-table-body td {
+    color: #242c3a;
+    border-bottom: 1px solid #414141; 
+}
+
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.verified {
+    background-color: #c6f6d5;
+    color: #22543d;
+}
+
+.status-badge.pending {
+    background-color: #feebc8;
+    color: #744210;
+}
+
+/* Campus Attendance Interactive Toggle Button */
+.campus-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.marker-icon {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Green Styling for "In Campus" (✓) */
+.marker-in {
+    background-color: #e6fffa;
+    color: #047481;
+    border: 1px solid #b2f5ea;
+}
+.marker-in:hover {
+    background-color: #b2f5ea;
+}
+
+/* Styling in - out button */
+.marker-out {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    border: 1px solid #fed7d7;
+}
+.marker-out:hover {
+    background-color: #fed7d7;
+}
+
+td {
+    white-space: nowrap;
+}
+
+/* === Search Section Styling ==== */
+.search-section {
+    margin-bottom: 20px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    background-color: #ecfdff;
+}
+
+#search-input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/*Hover Effect*/
+#search-input:hover {
+    border-color: #727c89; 
+    background-color: #e0fbff;
+}
+
+#search-input:focus {
+    outline: none;
+    border-color: #313233; 
+    background-color: #dadada;
+    box-shadow: 0 0 0 3px rgba(25, 25, 25, 0.11);
+}
