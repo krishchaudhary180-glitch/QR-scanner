@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration</title>
     <link rel="stylesheet" href="form.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -72,59 +74,59 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('registration-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevents empty page refresh
-            
-            // Your exact requested message text
-            alert("Your form has been registered and a QR will be provided to you via Mail");
-            
-            this.reset(); 
-        });
-    </script>
 
+<script>
+    // 1. DATABASE CONFIGURATION
+    const supabaseUrl = 'https://ionwyohuqszattwbrskr.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvbnd5b2h1cXN6YXR0d2Jyc2tyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTAyMTQxNiwiZXhwIjoyMDk0NTk3NDE2fQ.uiOjWCkeJyN-7x9fAOwFoTSWN648pUWGijSTR9THhCo';
+    
+    // Initialize Supabase client
+    const dbClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  <script>
-    const supabaseUrl = 'https://ionwyohuqszaffwbrskr.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvbnd5b2h1cXN6YXR0d2Jyc2tyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTAyMTQxNiwiZXhwIjoyMDk0NTk3NDE2fQ.uiOjWCkeJyN-7x9fAOwFoTSWN648pUWGijSTR9THhCo';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // 2. TOKEN GENERATOR
+    function generateUniqueToken() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let token = '';
+        for (let i = 0; i < 5; i++) {
+            token += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return token;
+    }
 
-    // 3. Handle Form Submission
-    // (Replace 'your-form-id' with the actual id attribute of your <form> tag)
-    document.getElementById('your-form-id').addEventListener('submit', async (e) => {
-      e.preventDefault(); // Prevents the page from refreshing
+    // 3. CONSOLIDATED SUBMISSION HANDLER
+    document.getElementById('registration-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      // Grab values from your input fields
-      // (Replace 'input-id-name' etc. with your actual HTML input IDs)
-      const fullName = document.getElementById('input-id-name').value;
-      const email = document.getElementById('input-id-email').value;
-      const collegeName = document.getElementById('input-id-college').value;
-      
-      // Auto-generate a simple token format for testing (e.g., ACC26-P-RandomNumber)
-      const generatedToken = 'ACC26-P-' + Math.floor(100000 + Math.random() * 900000);
+        // Get values from inputs
+        const fullName = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const category = document.getElementById('reg-category').value;
+        const collegeName = document.getElementById('reg-college').value.trim();
+        const amitianStatus = document.querySelector('input[name="amitianStatus"]:checked').value;
+        const uniqueToken = generateUniqueToken();
 
-      // Insert data into your Supabase table
-      const { data, error } = await supabase
-        .from('participants')
-        .insert([
-          { 
-            full_name: fullName, 
-            email: email, 
-            college_name: collegeName,
-            qr_token: generatedToken
-          }
-        ]);
+        // Push to Supabase
+        const { error } = await dbClient
+            .from('participants')
+            .insert([{ 
+                full_name: fullName, 
+                email: email, 
+                phone: phone,
+                Category: category, 
+                college_name: collegeName,
+                amitian_status: amitianStatus,
+                qr_token: uniqueToken 
+            }]);
 
-      if (error) {
-        console.error('Error inserting data:', error.message);
-        alert('Registration failed: ' + error.message);
-      } else {
-        alert('Registration Successful! Your token is: ' + generatedToken);
-        document.getElementById('your-form-id').reset(); // Clear the form fields
-      }
+        if (error) {
+            console.error('Database Error:', error.message);
+            alert('Registration failed: ' + error.message);
+        } else {
+            alert('Registration Successful! Your unique code is: ' + uniqueToken);
+            document.getElementById('registration-form').reset(); 
+        }
     });
-  </script>
-
-
+</script>
 </body>
 </html>
