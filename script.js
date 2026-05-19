@@ -1,229 +1,251 @@
 // ==========================================
-// 1. CONFIGURATION & SIMULATION ENGINE
+// 1. DATABASE CONFIGURATION & INITIALIZATION
 // ==========================================
+const supabaseUrl = 'https://ionwyohuqszattwbrskr.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvbnd5b2h1cXN6YXR0d2Jyc2tyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTAyMTQxNiwiZXhwIjoyMDk0NTk3NDE2fQ.uiOjWCkeJyN-7x9fAOwFoTSWN648pUWGijSTR9THhCo';
 
-const EVENT_START_DATE = new Date("2026-05-17"); 
+let dbClient;
+let globalLogsCache = [];
+let masterParticipantsMap = {}; 
 
-
-function getCurrentEventDay() {
-    const today = new Date();
-    
-    // Create a safe clone instance to prevent modifying the global constant object reference
-    const startDateClone = new Date(EVENT_START_DATE.getTime());
-    
-    // Clear time factors for an accurate day-to-day calendar difference calculation
-    const start = new Date(startDateClone.setHours(0, 0, 0, 0));
-    const current = new Date(today.setHours(0, 0, 0, 0));
-    
-    // Calculate difference in days
-    const diffTime = current - start;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-    if (diffDays === 1) return "Day 1";
-    if (diffDays === 2) return "Day 2";
-    if (diffDays === 3) return "Day 3";
-    
-    // Fallback safely for local sandbox testing outside your scheduled live run window
-    return "Day 1"; 
+try {
+    if (window.supabase) {
+        dbClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        console.log("Supabase client initialized successfully.");
+    } else {
+        alert("CRITICAL ERROR: Supabase library script link is missing or blocked in your HTML file!");
+    }
+} catch (e) {
+    console.error("Initialization failed:", e);
 }
 
-// Pre-registered pool used for mock simulations
-const participantPool = [
-    { name: "Bumrah" },
-    { name: "Ishaan" },
-    { name: "Dravid" },
-    { name: "Pandya" },
-    { name: "Gambhir" },
-    { name: "Sachin" }
-];
+// SIMULATION DATE CONTROL =================================>>>>>>>>>>>>>>>>>>>>>>
 
-// Active log records (Historical records from earlier days remain completely safe)
-let activeLogs = [
-    { id: "QR-9081", name: "Dhoni", inTime: "09:30:15 AM", outTime: " - : - : - ", day: "Day 1", status: "In" },
-    { id: "QR-4412", name: "Virat", inTime: "10:15:30 AM", outTime: "05:45:12 PM", day: "Day 1", status: "Out" }
-];
+const EVENT_START_DATE = new Date("2026-05-17"); 
+let currentFilter = 'all'; 
 
-let currentFilter = 'all';
 
-// ==========================================
-// 2. MAIN LOGIC: RENDER DASHBOARD TABLE
-// ==========================================
+// 2. CALENDAR ENGINE
+function getCurrentEventDayNumber() {
+    const today = new Date();
+    const start = new Date(new Date(EVENT_START_DATE).setHours(0, 0, 0, 0));
+    const current = new Date(today.setHours(0, 0, 0, 0));
+    const diffDays = Math.floor((current - start) / (1000 * 60 * 60 * 24)) + 1;
+    return (diffDays >= 1 && diffDays <= 3) ? diffDays : 1;
+}
 
-function renderTable() {
-    const tableBody = document.getElementById("log-table-body");
-    const searchInput = document.getElementById("search-input");
+// 3. LIVE DATABASE LOGIC & OPERATIONS
+async function fetchAndRenderDashboard() {
+    if (!dbClient) return;
+
+    console.log("Fetching logs matching explicit schema columns...");
     
-    // Extract search query
-    const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : "";
-    
-    tableBody.innerHTML = "";
+    // 1. Fetch names matching whatever column key links your participants master table
+    const { data: profiles, error: profileError } = await dbClient
+        .from('participants')
+        .select('id, full_name'); // Uses 'id' to map to 'participant_id' log rows
 
-    // Filter rows based on BOTH the active Day Button AND the Search Input text
-    const filteredLogs = activeLogs.filter(log => {
-        const matchesDay = (currentFilter === 'all' || log.day === currentFilter);
-        const matchesSearch = log.id.toLowerCase().includes(searchQuery) || 
-                              log.name.toLowerCase().includes(searchQuery);
+    if (profiles) {
+        profiles.forEach(p => {
+            if (p.id) masterParticipantsMap[p.id] = p.full_name;
+        });
+    }
+
+    // 2. Fetch log rows tracking exactly against your structural keys
+    const { data: logs, error: logError } = await dbClient
+        .from('attendance_logs')
+        .select('id, participant_id, event_day, action, scan_time')
+        .order('scan_time', { ascending: false });
+
+    if (logError) {
+        alert("Database Fetch Error: " + logError.message);
+        return;
+    }
+
+    globalLogsCache = logs || [];
+    applyLocalFiltersAndRender();
+}
+
+function applyLocalFiltersAndRender() {
+    const tableBody = document.getElementById('log-table-body');
+    if (!tableBody) return;
+
+    const searchQuery = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
+    tableBody.innerHTML = ''; 
+
+    const filtered = globalLogsCache.filter(log => {
+        let matchesDay = true;
+        if (currentFilter !== 'all') {
+            const targetDayNum = parseInt(currentFilter.replace('Day ', ''), 10);
+            matchesDay = (log.event_day === targetDayNum);
+        }
+        
+        const uuidString = (log.participant_id || "").toLowerCase();
+        const resolvedName = masterParticipantsMap[log.participant_id] || "Unknown Participant";
+        const matchesSearch = !searchQuery || uuidString.includes(searchQuery) || resolvedName.toLowerCase().includes(searchQuery);
 
         return matchesDay && matchesSearch;
     });
 
-    // Custom warning message if no results match
-    if (filteredLogs.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ff330f; padding: 20px; font-weight: bold;">!!No matching scans found!!</td></tr>`;
+    if (filtered.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="empty-table-placeholder">— No Entry Yet —</td></tr>`;
         return;
     }
 
-    // Build the updated rows dynamically with separate In/Out times and Status Switch
-    filteredLogs.forEach((log) => {
-        // Determine active styling based on current state
-        const statusClass = log.status === "In" ? "marker-in" : "marker-out";
-        const statusIcon = log.status === "In" ? "✓" : "O";
-        const statusText = log.status === "In" ? "In" : "Out";
+    filtered.forEach(log => {
+        const participantName = masterParticipantsMap[log.participant_id] || "Unknown Participant";
+        const timeFormatted = log.scan_time ? new Date(log.scan_time).toLocaleTimeString() : "- : - : -";
+        
+        let statusToggleHTML = '';
+        if (log.action === 'CHECK_IN') {
+            statusToggleHTML = `<button class="campus-toggle-btn marker-in" onclick="toggleParticipantStatus(event, ${log.id}, 'CHECK_OUT')"><span class="marker-icon">✓</span> IN</button>`;
+        } else {
+            statusToggleHTML = `<button class="campus-toggle-btn marker-out" onclick="toggleParticipantStatus(event, ${log.id}, 'CHECK_IN')"><span class="marker-icon">✕</span> OUT</button>`;
+        }
 
-        const row = `
-            <tr>
-                <td><strong>${log.id}</strong></td>
-                <td>${log.name}</td>
-                <td style="color: var(--accent-green); font-weight: 500;">${log.inTime}</td>
-                <td style="color: ${log.outTime === ' - : - : - ' ? '#718096' : 'var(--primary)'}; font-weight: 500;">${log.outTime}</td>
-                <td style="color: #e2e8f0; font-weight: 600;">${log.day}</td>
-                <td>
-                    <button class="campus-toggle-btn ${statusClass}" onclick="toggleParticipantStatus('${log.id}')">
-                        <span class="marker-icon">${statusIcon}</span> ${statusText}
-                    </button>
-                </td>
+        const rowHTML = `
+            <tr onclick="openParticipantDrawer('${log.participant_id}')" style="cursor: pointer;">
+                <td><strong>${log.participant_id ? log.participant_id.substring(0,8): 'N/A'}</strong></td>
+                <td>${participantName}</td>
+                <td>${log.action === 'CHECK_IN' ? timeFormatted : '- : - : -'}</td>
+                <td>${log.action === 'CHECK_OUT' ? timeFormatted : '- : - : -'}</td>
+                <td>Day ${log.event_day || 1}</td>
+                <td>${statusToggleHTML}</td>
             </tr>
         `;
-        tableBody.innerHTML += row;
+        tableBody.insertAdjacentHTML('beforeend', rowHTML);
     });
 }
 
-// ==========================================
-// 3. INTERACTIVE ACTIONS & HANDLERS
-// ==========================================
+async function toggleParticipantStatus(event, logId, nextActionState) {
+    event.stopPropagation(); 
+    if (!dbClient) return;
 
-function handleIncomingQRScan(scannedId, scannedName) {
-    if (!scannedId || !scannedName) return;
+    const { error } = await dbClient
+        .from('attendance_logs')
+        .update({ 
+            action: nextActionState,
+            scan_time: new Date().toISOString()
+        })
+        .eq('id', logId);
 
-    const now = new Date();
-    const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    // Determine the current running day automatically via calendar date tracking
-    const computedCurrentDay = getCurrentEventDay();
-
-    // Check if the participant already scanned into the system *today*
-    const existingEntryToday = activeLogs.find(log => log.id === scannedId && log.day === computedCurrentDay);
-
-    if (existingEntryToday) {
-        // SECOND SCAN TODAY: Update exit timestamp and flip their active status to out
-        existingEntryToday.outTime = timestamp; 
-        existingEntryToday.status = "Out";
+    if (error) {
+        alert("Status update failed: " + error.message);
     } else {
-        // FIRST SCAN TODAY: Add a brand new history entry locked to today's event day number
-        const newScanEntry = {
-            id: scannedId,
-            name: scannedName,
-            inTime: timestamp,
-            outTime: " - : - : - ",
-            day: computedCurrentDay, // Securely logged under the live auto day
-            status: "In"
-        };
-        activeLogs.unshift(newScanEntry); 
+        fetchAndRenderDashboard();
     }
-
-    renderTable();
 }
 
-// Manual Status Click Switch Override Handler
-function toggleParticipantStatus(id) {
-    const participant = activeLogs.find(log => log.id === id);
-    if (participant) {
-        if (participant.status === "In") {
-            participant.status = "Out";
-            // If they are manually toggled to out and have no outTime record yet, apply a current timestamp
-            if (participant.outTime === " - : - : - ") {
-                const now = new Date();
-                participant.outTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            }
+async function checkInParticipant(participantUuid) {
+    if (!dbClient || !participantUuid.trim()) return;
+
+    const targetDayNumber = getCurrentEventDayNumber(); 
+
+    // Verify profile exists using the UUID lookup key
+    const { data: participant, error: profileError } = await dbClient
+        .from('participants')
+        .select('*')
+        .eq('id', participantUuid)
+        .maybeSingle();
+
+    if (profileError || !participant) {
+        alert(`❌ Access Denied: User UUID '${participantUuid}' not found in registration catalog!`);
+        return;
+    }
+
+    // Lookup running log states
+    const { data: activeLog, error: logError } = await dbClient
+        .from('attendance_logs')
+        .select('*')
+        .eq('participant_id', participantUuid)
+        .eq('event_day', targetDayNumber)
+        .eq('action', 'CHECK_IN')
+        .maybeSingle();
+
+    if (activeLog) {
+        const { error: updateError } = await dbClient
+            .from('attendance_logs')
+            .update({ 
+                action: 'CHECK_OUT',
+                scan_time: new Date().toISOString()
+            })
+            .eq('id', activeLog.id);
+
+        if (updateError) {
+            alert("Checkout processing failed: " + updateError.message);
         } else {
-            participant.status = "In";
+            alert(`✕ Checked Out: Goodbye, ${participant.full_name || 'User'}!`);
+            fetchAndRenderDashboard();
         }
-        renderTable();
+        return;
+    }
+
+    // Inserts matches your database layout properties exactly
+    const { error: insertError } = await dbClient
+        .from('attendance_logs')
+        .insert([{
+            participant_id: participantUuid,
+            event_day: targetDayNumber,
+            action: 'CHECK_IN',
+            scan_time: new Date().toISOString()
+        }]);
+
+    if (insertError) {
+        alert("Database transaction failed: " + insertError.message);
+    } else {
+        alert(`✅ Approved: Welcome to Day ${targetDayNumber}, ${participant.full_name || 'User'}!`);
+        fetchAndRenderDashboard(); 
     }
 }
 
-// Upper Utility Tab Section Event Filters
-function setupDayFilters() {
-    const buttons = document.querySelectorAll(".day-btn");
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            buttons.forEach(btn => btn.classList.remove("active"));
-            button.classList.add("active");
-            currentFilter = button.getAttribute("data-day");
-            renderTable();
+// ==========================================
+// 4. DRAWER VISUAL UI FUNCTIONS
+// ==========================================
+async function openParticipantDrawer(participantUuid) {
+    if (!dbClient) return;
+
+    const { data: p, error } = await dbClient
+        .from('participants')
+        .select('*')
+        .eq('id', participantUuid)
+        .maybeSingle();
+
+    if (error || !p) return;
+
+    document.getElementById('drawer-name').innerText = p.full_name || 'N/A';
+    document.getElementById('drawer-id').innerText = p.id || 'N/A';
+    document.getElementById('drawer-email').innerText = p.email || 'N/A';
+    document.getElementById('drawer-college').innerText = p.college_name || 'N/A';
+    document.getElementById('drawer-phone').innerText = p.phone || 'N/A';
+    document.getElementById('drawer-category').innerText = 'Participant';
+
+    document.getElementById('detail-drawer').classList.add('open');
+}
+
+function closeDetailDrawer(event) {
+    if (event === false || event.target.classList.contains('drawer-overlay') || event.target.classList.contains('close-drawer-btn')) {
+        document.getElementById('detail-drawer').classList.remove('open');
+    }
+}
+
+// ==========================================
+// 5. INTUITIVE EVENT INITIALIZATION
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    fetchAndRenderDashboard();
+
+    const searchBar = document.getElementById('search-input');
+    if (searchBar) {
+        searchBar.addEventListener('input', applyLocalFiltersAndRender);
+    }
+
+    const dayButtons = document.querySelectorAll('.day-btn');
+    dayButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            dayButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.getAttribute('data-day');
+            applyLocalFiltersAndRender();
         });
     });
-}
-
-function setupSearchFilter() {
-    const searchInput = document.getElementById("search-input");
-    if (!searchInput) return;
-    searchInput.addEventListener("input", () => { renderTable(); });
-}
-
-/* Simulates real behavior using auto-day assignment */
-/* Simulates real-world multi-day scanning behavior safely */
-function setupSimulationButton() {
-    const simulateBtn = document.getElementById("simulate-scan-btn");
-    if (!simulateBtn) return;
-
-    simulateBtn.addEventListener("click", () => {
-        // 1. Pick a random person from the pre-registered pool
-        const randomPerson = participantPool[Math.floor(Math.random() * participantPool.length)];
-        
-        // 2. Find out what day the automated system clock is currently running on
-        const computedCurrentDay = getCurrentEventDay();
-        
-        // 3. Look for an existing log for this person ONLY within TODAY's specific day track
-        const matchingLogToday = activeLogs.find(log => log.name === randomPerson.name && log.day === computedCurrentDay);
-        
-        if (matchingLogToday) {
-            // If they already scanned IN today, this second scan checks them OUT for today
-            handleIncomingQRScan(matchingLogToday.id, matchingLogToday.name);
-        } else {
-            // If they haven't scanned yet TODAY, treat them as a brand new entry for today.
-            // Even if they have a log under "Day 1", this generates a fresh, separate row for Day 2/Day 3.
-            const generatedId = "QR-" + Math.floor(1234 + Math.random() * 5678);
-            handleIncomingQRScan(generatedId, randomPerson.name);
-        }
-    });
-}
-
-
-function setupResetButton() {
-    const resetBtn = document.getElementById("reset-time-btn");
-    if (!resetBtn) return;
-
-    resetBtn.addEventListener("click", () => {
-        const confirmReset = confirm("THIS WILL DELETE IN / OUT TIME OF EVERY PARTICIPANT");
-        
-        if (confirmReset) {
-            activeLogs.forEach(log => {
-                log.inTime = " - : - : - ";
-                log.outTime = " - : - : - ";
-            });
-            renderTable();
-        }
-    });
-}
-
-// ==========================================
-// 4. MAIN LIFECYCLE RUNTIME INITIALIZATION
-// ==========================================
-window.onload = () => {
-    renderTable();
-    setupDayFilters();
-    setupSearchFilter();
-    setupSimulationButton();
-    setupResetButton();
-};
+});

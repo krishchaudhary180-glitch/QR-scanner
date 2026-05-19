@@ -12,10 +12,6 @@
         <h1>QR Code Scanner Dashboard</h1>
         <p>Track real-time participant check-ins and scans.</p>
 
-<button id="reset-time-btn" style="background: var(--accent-red); color: #000; border: none; padding: 10px 20px; font-weight: 700; font-family: var(--font-display); letter-spacing: 1px; border-radius: 10px; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.2); margin-left: 10px;">RESET TIMES</button>
-
-<br><br>
-
         <div class="action-ribbon">
             <div class="filter-section">
                 <span class="filter-label">Filter by Event Day:</span>
@@ -25,10 +21,6 @@
                     <button class="day-btn" data-day="Day 2">Day 2</button>
                     <button class="day-btn" data-day="Day 3">Day 3</button>
                 </div>
-            </div>
-
-            <div class="testing-actions">
-                <button id="simulate-scan-btn">DEMO</button>
             </div>
         </div>
 
@@ -54,6 +46,41 @@
         </div>
     </div>
 
+    <div id="detail-drawer" class="drawer-overlay" onclick="closeDetailDrawer(event)">
+        <div class="drawer-content" onclick="event.stopPropagation()">
+            <button class="close-drawer-btn" onclick="closeDetailDrawer(false)">&times;</button>
+            
+            <div class="profile-header">
+                <div class="profile-avatar">ID</div>
+                <h2 id="drawer-name">Participant Name</h2>
+                <p id="drawer-id" style="color: var(--primary); font-family: monospace;">QR-0000</p>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+            
+            <div class="info-group">
+                <label>Email Address</label>
+                <p id="drawer-email">N/A</p>
+            </div>
+            
+            <div class="info-group">
+                <label>Phone Number</label>
+                <p id="drawer-phone">N/A</p>
+            </div>
+            
+            <div class="info-group">
+                <label>College / Institution</label>
+                <p id="drawer-college">N/A</p>
+            </div>
+            
+            <div class="info-group">
+                <label>Category</label>
+                <p id="drawer-category">N/A</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 </html>

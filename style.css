@@ -138,26 +138,6 @@ p {
   box-shadow: 0 0 10px rgba(0, 255, 242, 0.15);
 }
 
-/* --- Custom Glowing Demo Button --- */
-#simulate-scan-btn {
-  background: var(--accent-green);
-  color: #000;
-  border: none;
-  padding: 10px 24px;
-  font-weight: 700;
-  font-family: var(--font-display);
-  letter-spacing: 1px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 15px rgba(0, 255, 102, 0.2);
-}
-
-#simulate-scan-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 20px var(--accent-green);
-}
-
 /* --- Glowing Interactive Search Section --- */
 .search-section {
   margin-bottom: 24px;
@@ -237,28 +217,6 @@ tr:hover {
   background-color: rgba(255, 255, 255, 0.02);
 }
 
-/* --- Verification Component Badges --- */
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.status-badge.verified {
-  background-color: rgba(0, 255, 102, 0.1);
-  color: var(--accent-green);
-  border: 1px solid rgba(0, 255, 102, 0.2);
-}
-
-.status-badge.pending {
-  background-color: rgba(255, 165, 0, 0.1);
-  color: #ffa500;
-  border: 1px solid rgba(255, 165, 0, 0.2);
-}
-
 /* --- Interactive Status Toggle Buttons --- */
 .campus-toggle-btn {
   display: inline-flex;
@@ -300,4 +258,110 @@ tr:hover {
 .marker-out:hover {
   background-color: rgba(255, 51, 102, 0.15);
   box-shadow: 0 0 12px rgba(255, 51, 102, 0.2);
+}
+
+/* Drawer System */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-content {
+  width: 400px;
+  height: 100%;
+  background: #111622;
+  border-left: 1px solid var(--border);
+  padding: 40px 30px;
+  position: relative;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+
+.drawer-overlay.open .drawer-content {
+  transform: translateX(0);
+}
+
+.close-drawer-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  color: #718096;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.close-drawer-btn:hover { color: #fff; }
+
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--accent-green);
+  margin-bottom: 15px;
+}
+
+.info-group {
+  margin-bottom: 20px;
+}
+
+.info-group label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #718096;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.info-group p {
+  color: #e2e8f0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+#log-table-body tr {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#log-table-body tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* --- Empty Table Placeholder --- */
+.empty-table-placeholder {
+  text-align: center;
+  color: #718096; /* Light gray / muted slate */
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 40px 0 !important;
+  pointer-events: none;
+  background: transparent !important;
 }
