@@ -26,7 +26,8 @@ let currentFilter = 'all';
 
 
 // 2. CALENDAR ENGINE
-function getCurrentEventDayNumber() {
+function getCurrentEventDayNumber() 
+{
     const today = new Date();
     const start = new Date(new Date(EVENT_START_DATE).setHours(0, 0, 0, 0));
     const current = new Date(today.setHours(0, 0, 0, 0));
